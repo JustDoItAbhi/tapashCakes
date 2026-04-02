@@ -87,6 +87,19 @@
             background: #f8f9fa;
             color: #333;
             font-weight: bold;
+            cursor: pointer;
+        }
+
+        th a {
+            color: #333;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        th a:hover {
+            color: #667eea;
         }
 
         tr:hover {
@@ -112,9 +125,74 @@
             color: #155724;
         }
 
-        .badge-unavailable {
+        .badge-not_available {
             background: #f8d7da;
             color: #721c24;
+        }
+
+        /* Pagination Styles */
+        .pagination {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .pagination-controls a {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            text-decoration: none;
+            color: #667eea;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .pagination-controls a:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .pagination-controls a.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .pagination-controls span {
+            padding: 8px 12px;
+            color: #666;
+        }
+
+        .page-size {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-size select {
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .info {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .sort-indicator {
+            font-size: 12px;
+            margin-left: 5px;
         }
 
         @media (max-width: 768px) {
@@ -129,6 +207,11 @@
 
             th, td {
                 padding: 8px;
+            }
+
+            .pagination {
+                flex-direction: column;
+                align-items: center;
             }
         }
     </style>
@@ -152,28 +235,103 @@
             <table>
                 <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Category Name</th>
+                    <th>
+                        <a th:href="@{/(page=${currentPage}, size=${pageSize}, sortBy='categoryName', direction=${sortDirection == 'ASC' ? 'DESC' : 'ASC'})}">
+                            Category Name
+                            <span th:if="${sortBy == 'categoryName'}" class="sort-indicator">
+                                <span th:if="${sortDirection == 'ASC'}">↑</span>
+                                <span th:if="${sortDirection == 'DESC'}">↓</span>
+                            </span>
+                        </a>
+                    </th>
                     <th>Description</th>
-                    <th>Status</th>
-                    <th>Created Date</th>
-                    <th>Created Time</th>
+                    <th>
+                        <a th:href="@{/(page=${currentPage}, size=${pageSize}, sortBy='status', direction=${sortDirection == 'ASC' ? 'DESC' : 'ASC'})}">
+                            Status
+                            <span th:if="${sortBy == 'status'}" class="sort-indicator">
+                                <span th:if="${sortDirection == 'ASC'}">↑</span>
+                                <span th:if="${sortDirection == 'DESC'}">↓</span>
+                            </span>
+                        </a>
+                    </th>
+                    <th>
+                        <a th:href="@{/(page=${currentPage}, size=${pageSize}, sortBy='createdDate', direction=${sortDirection == 'ASC' ? 'DESC' : 'ASC'})}">
+                            Created Date
+                            <span th:if="${sortBy == 'createdDate'}" class="sort-indicator">
+                                <span th:if="${sortDirection == 'ASC'}">↑</span>
+                                <span th:if="${sortDirection == 'DESC'}">↓</span>
+                            </span>
+                        </a>
+                    </th>
+                    <th>
+                        <a th:href="@{/(page=${currentPage}, size=${pageSize}, sortBy='createdTime', direction=${sortDirection == 'ASC' ? 'DESC' : 'ASC'})}">
+                            Created Time
+                            <span th:if="${sortBy == 'createdTime'}" class="sort-indicator">
+                                <span th:if="${sortDirection == 'ASC'}">↑</span>
+                                <span th:if="${sortDirection == 'DESC'}">↓</span>
+                            </span>
+                        </a>
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="category : ${categories}">
-                    <td th:text="${category.id}">1</td>
                     <td th:text="${category.categoryName}">Category Name</td>
                     <td th:text="${category.description}">Description</td>
                     <td>
-                            <span th:class="'badge badge-' + ${category.status?.name().toLowerCase()}"
-                                  th:text="${category.status}">AVAILABLE</span>
+                        <span th:class="'badge badge-' + ${category.status?.name().toLowerCase()}"
+                              th:text="${category.status}">AVAILABLE</span>
                     </td>
                     <td th:text="${category.createdDate}">2024-01-01</td>
                     <td th:text="${category.createdTime}">10:30:00</td>
                 </tr>
                 </tbody>
             </table>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <div class="info">
+                    Showing <span th:text="${categories.size()}"></span> of <span th:text="${totalItems}"></span> categories
+                </div>
+
+                <div class="pagination-controls">
+                    <!-- Previous button -->
+                    <a th:if="${currentPage > 1}"
+                       th:href="@{/(page=${currentPage - 1}, size=${pageSize}, sortBy=${sortBy}, direction=${sortDirection})}">
+                        ← Previous
+                    </a>
+                    <span th:if="${currentPage == 1}" style="color: #ccc;">← Previous</span>
+
+                    <!-- Page numbers -->
+                    <a th:each="pageNum : ${#numbers.sequence(1, totalPages)}"
+                       th:href="@{/(page=${pageNum}, size=${pageSize}, sortBy=${sortBy}, direction=${sortDirection})}"
+                       th:text="${pageNum}"
+                       th:class="${pageNum == currentPage} ? 'active' : ''">
+                    </a>
+
+                    <!-- Next button -->
+                    <a th:if="${currentPage < totalPages}"
+                       th:href="@{/(page=${currentPage + 1}, size=${pageSize}, sortBy=${sortBy}, direction=${sortDirection})}">
+                        Next →
+                    </a>
+                    <span th:if="${currentPage == totalPages}" style="color: #ccc;">Next →</span>
+                </div>
+
+                <div class="page-size">
+                    <label>Show:</label>
+                    <select onchange="window.location.href=this.value">
+                        <option th:selected="${pageSize == 5}"
+                                th:value="@{/(page=1, size=5, sortBy=${sortBy}, direction=${sortDirection})}">5</option>
+                        <option th:selected="${pageSize == 10}"
+                                th:value="@{/(page=1, size=10, sortBy=${sortBy}, direction=${sortDirection})}">10</option>
+                        <option th:selected="${pageSize == 20}"
+                                th:value="@{/(page=1, size=20, sortBy=${sortBy}, direction=${sortDirection})}">20</option>
+                        <option th:selected="${pageSize == 50}"
+                                th:value="@{/(page=1, size=50, sortBy=${sortBy}, direction=${sortDirection})}">50</option>
+                    </select>
+                    <span>per page</span>
+                </div>
+            </div>
         </div>
 
         <div th:if="${categories == null or categories.empty}" class="empty-state">

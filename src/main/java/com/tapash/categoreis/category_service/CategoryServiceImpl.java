@@ -2,7 +2,6 @@ package com.tapash.categoreis.category_service;
 
 import com.tapash.categoreis.category_dtos.CategoryRequestDto;
 import com.tapash.categoreis.category_dtos.CategoryResponseDto;
-import com.tapash.categoreis.category_exceptions.CategoryMessageException;
 import com.tapash.categoreis.category_exceptions.excpetions.CakeCategoryNotFound;
 import com.tapash.categoreis.category_exceptions.excpetions.CategoryAlreadyExsists;
 import com.tapash.categoreis.category_mapper.CategoryMapper;
@@ -11,13 +10,13 @@ import com.tapash.entity.CakeCategory;
 import com.tapash.entity.CategoryStatus;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
-import java.awt.print.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -48,24 +47,24 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     @Override
-    public List<CategoryResponseDto> getAllCategories() {
-        List<CakeCategory>categories=categoryRepository.findAll();
+    public Page<CategoryResponseDto> getAllCategories(Pageable request) {
+        Page<CakeCategory>categories=categoryRepository.findAll(request);
         List<CategoryResponseDto>responseDtos=new ArrayList<>();
         for(CakeCategory category:categories){
             responseDtos.add(CategoryMapper.fromEntiryCategory(category));
         }
 
-        return responseDtos;
+        return new PageImpl<>(responseDtos,request,categories.getTotalElements());
     }
 
     @Override
     @Transactional
     public CategoryResponseDto updateCategory(UUID id, CategoryRequestDto dto) {
-        CakeCategory oldcategory=categoryRepository.getReferenceById(id);
-        if(oldcategory==null){
+        Optional<CakeCategory> oldcategory=categoryRepository.findById(id);
+        if(oldcategory.isEmpty()){
             throw new CakeCategoryNotFound("THIS CAKE ID NOT FOUND "+id);
         }
-        CakeCategory category=oldcategory;
+        CakeCategory category=oldcategory.get();
         category.setCategoryName(dto.getCategoryName());
         category.setDescription(dto.getDescription());
         categoryRepository.save(category);
@@ -76,8 +75,8 @@ public class CategoryServiceImpl implements CategoryService{
     @Override
     @Transactional
     public boolean deleteCategory(UUID id) {
-        CakeCategory category=categoryRepository.getReferenceById(id);
-        if(category==null){
+        Optional<CakeCategory> category=categoryRepository.findById(id);
+        if(category.isEmpty()){
             throw new CakeCategoryNotFound("THIS CAKE ID NOT FOUND "+id);
         }
             categoryRepository.deleteById(id);
@@ -86,11 +85,11 @@ public class CategoryServiceImpl implements CategoryService{
 
     @Override
     public CategoryResponseDto findById(UUID id) {
-        CakeCategory category=categoryRepository.getReferenceById(id);
-        if(category==null){
+        Optional<CakeCategory> category=categoryRepository.findById(id);
+        if(category.isEmpty()){
             throw new CakeCategoryNotFound("THIS CAKE ID NOT FOUND "+id);
         }
-        return CategoryMapper.fromEntiryCategory(category);
+        return CategoryMapper.fromEntiryCategory(category.get());
     }
 
     @Override

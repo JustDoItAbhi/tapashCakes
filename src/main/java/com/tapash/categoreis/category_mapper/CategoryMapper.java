@@ -2,7 +2,7 @@ package com.tapash.categoreis.category_mapper;
 
 import com.tapash.categoreis.category_dtos.CategoryResponseDto;
 import com.tapash.entity.CakeCategory;
-import org.modelmapper.ModelMapper;
+
 import org.springframework.stereotype.Component;
 
 @Component
