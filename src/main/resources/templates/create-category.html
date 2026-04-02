@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Category</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+        }
+
+        .form-container {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        label .required {
+            color: #dc3545;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .field-error {
+            border-color: #dc3545 !important;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .global-error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #dc3545;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+            }
+
+            .form-container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>✨ Create New Category</h1>
+    </div>
+
+    <div class="form-container">
+        <!-- Global error message -->
+        <div th:if="${error}" class="global-error" th:text="${error}"></div>
+
+        <form action="/create" method="post" th:object="${category}">
+            <div class="form-group">
+                <label for="categoryName">
+                    Category Name <span class="required">*</span>
+                </label>
+                <input type="text"
+                       id="categoryName"
+                       th:field="*{categoryName}"
+                       placeholder="e.g., Chocolate Cakes, Cheesecakes, Fruit Cakes"
+                       th:classappend="${#fields.hasErrors('categoryName')} ? 'field-error' : ''"/>
+                <div th:if="${#fields.hasErrors('categoryName')}"
+                     th:errors="*{categoryName}"
+                     class="error-message"></div>
+                <small style="color: #666; display: block; margin-top: 5px;">
+                    Category name must be unique and between 2-100 characters
+                </small>
+            </div>
+
+            <div class="form-group">
+                <label for="description">
+                    Description <span class="required">*</span>
+                </label>
+                <textarea id="description"
+                          th:field="*{description}"
+                          placeholder="Describe the category..."></textarea>
+                <div th:if="${#fields.hasErrors('description')}"
+                     th:errors="*{description}"
+                     class="error-message"></div>
+                <small style="color: #666; display: block; margin-top: 5px;">
+                    Maximum 2000 characters
+                </small>
+            </div>
+
+            <button type="submit">Create Category</button>
+
+            <div class="back-link">
+                <a href="/">← Back to Home</a>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
