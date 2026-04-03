@@ -1,7 +1,7 @@
 package com.tapash.categoreis.category_mapper;
 
 import com.tapash.categoreis.category_dtos.CategoryResponseDto;
-import com.tapash.entity.CakeCategory;
+import com.tapash.entity.category.CakeCategory;
 
 import org.springframework.stereotype.Component;
 

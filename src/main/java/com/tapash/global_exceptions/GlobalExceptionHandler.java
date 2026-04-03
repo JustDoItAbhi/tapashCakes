@@ -1,9 +1,9 @@
-package com.tapash.categoreis.category_exceptions;
+package com.tapash.global_exceptions;
 
 
-import com.tapash.categoreis.category_exceptions.excpetions.CakeCategoryNotFound;
-import com.tapash.categoreis.category_exceptions.excpetions.CategoryAlreadyExsists;
-import com.tapash.entity.CakeCategory;
+import com.tapash.global_exceptions.category_ex.CakeCategoryNotFound;
+import com.tapash.global_exceptions.category_ex.CategoryAlreadyExsists;
+import com.tapash.global_exceptions.category_ex.TitledCakeNotFound;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -76,7 +76,13 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ApiResponse handleGenericException(Exception ex) {
         log.error("Unexpected error occurred", ex);
-        return ApiResponse.error("Internal server error", "Please contact support");
+        Map<String,String>map=new HashMap<>();
+        map.put("error", ex.getMessage());
+
+        return ApiResponse.error(
+                "Internal server error",
+                 ex.getMessage()
+                );
     }
 
     @ExceptionHandler(CategoryAlreadyExsists.class)
@@ -92,6 +98,19 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CakeCategoryNotFound.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<CategoryMessageException> notfound(CakeCategoryNotFound ex) {
+        CategoryMessageException exception=new CategoryMessageException(
+                LocalDateTime.now(),
+                ex.getMessage(),
+                404
+
+        );
+        return new ResponseEntity<>(exception,HttpStatus.NOT_FOUND);
+    }
+
+
+    @ExceptionHandler(TitledCakeNotFound.class)
+    public ResponseEntity<CategoryMessageException> handleCakeNotFound(TitledCakeNotFound ex) {
+
         CategoryMessageException exception=new CategoryMessageException(
                 LocalDateTime.now(),
                 ex.getMessage(),

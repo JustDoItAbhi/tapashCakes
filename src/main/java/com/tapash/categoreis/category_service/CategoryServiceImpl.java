@@ -2,17 +2,20 @@ package com.tapash.categoreis.category_service;
 
 import com.tapash.categoreis.category_dtos.CategoryRequestDto;
 import com.tapash.categoreis.category_dtos.CategoryResponseDto;
-import com.tapash.categoreis.category_exceptions.excpetions.CakeCategoryNotFound;
-import com.tapash.categoreis.category_exceptions.excpetions.CategoryAlreadyExsists;
+import com.tapash.categoreis.category_dtos.FilterDto;
+import com.tapash.categoreis.category_dtos.OnlyCakesTitlesAndId;
+import com.tapash.global_exceptions.category_ex.CakeCategoryNotFound;
+import com.tapash.global_exceptions.category_ex.CategoryAlreadyExsists;
 import com.tapash.categoreis.category_mapper.CategoryMapper;
 import com.tapash.categoreis.category_repo.CategoryRepository;
-import com.tapash.entity.CakeCategory;
-import com.tapash.entity.CategoryStatus;
+import com.tapash.categoreis.utils.SpecificationsUtils;
+import com.tapash.entity.category.CakeCategory;
+import com.tapash.entity.category.CategoryStatus;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +30,8 @@ import java.util.UUID;
 public class CategoryServiceImpl implements CategoryService{
     private final CategoryRepository categoryRepository;
 
+    @Autowired
+    private SpecificationsUtils specificationsUtils;
     public CategoryServiceImpl(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
     }
@@ -113,4 +118,41 @@ public class CategoryServiceImpl implements CategoryService{
         categoryRepository.save(cake);
         return CategoryMapper.fromEntiryCategory(cake);
     }
+
+    @Override
+    public List<CategoryResponseDto> search(FilterDto dto) {
+    List<CakeCategory> category=    categoryRepository.findAll(SpecificationsUtils.search(dto));
+    List<CategoryResponseDto>responseDtos=new ArrayList<>();
+    for(CakeCategory cakeCategory:category){
+        responseDtos.add(CategoryMapper.fromEntiryCategory(cakeCategory));
+    }
+        return responseDtos;
+    }
+    @Override
+    public List<OnlyCakesTitlesAndId> ListOfCakeTitle(String title) {
+        List<CakeCategory> titles=categoryRepository.findAll(SpecificationsUtils.searchListOfTitle(title));
+
+        List<OnlyCakesTitlesAndId>response=new ArrayList<>();
+        int count=1;
+        for(CakeCategory cake :titles){
+            OnlyCakesTitlesAndId cakesTitlesAndId1=new OnlyCakesTitlesAndId();
+            cakesTitlesAndId1.setNumberOfCake(count++);
+            cakesTitlesAndId1.setId(cake.getId());
+            cakesTitlesAndId1.setTitle(cake.getCategoryName());
+            response.add(cakesTitlesAndId1);
+        }
+        System.out.println("LIST OF CAKES "+ response.size());
+        return response;
+    }
+
+    @Override
+    public CategoryResponseDto gtCakeByName(String name) {
+       Optional<CakeCategory> titles=categoryRepository.findOne(SpecificationsUtils.searchbyname(name));
+        if(titles.isEmpty()){
+            throw new CakeCategoryNotFound("no such cake exsists "+ name);
+        }
+        return CategoryMapper.fromEntiryCategory(titles.get());
+
+    }
+
 }

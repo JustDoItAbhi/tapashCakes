@@ -1,4 +1,4 @@
-package com.tapash.categoreis.category_exceptions;
+package com.tapash.global_exceptions;
 
 import lombok.Getter;
 import lombok.Setter;

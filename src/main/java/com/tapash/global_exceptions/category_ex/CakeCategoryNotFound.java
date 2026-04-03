@@ -1,4 +1,4 @@
-package com.tapash.categoreis.category_exceptions.excpetions;
+package com.tapash.global_exceptions.category_ex;
 
 public class CakeCategoryNotFound extends RuntimeException{
     public CakeCategoryNotFound() {

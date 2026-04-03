@@ -1,8 +1,6 @@
 package com.tapash.categoreis.category_dtos;
 
-import com.tapash.entity.CategoryStatus;
-import lombok.Builder;
-import lombok.Data;
+import com.tapash.entity.category.CategoryStatus;
 import lombok.Getter;
 import lombok.Setter;
 

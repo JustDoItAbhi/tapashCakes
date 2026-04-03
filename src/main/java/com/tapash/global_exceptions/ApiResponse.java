@@ -1,8 +1,7 @@
-package com.tapash.categoreis.category_exceptions;
+package com.tapash.global_exceptions;
 
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
@@ -40,7 +39,7 @@ public class ApiResponse {
         return ApiResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.BAD_REQUEST.value())
-                .error("Error")
+                .error("something wrong with api")
                 .message(message)
                 .suggestion(suggestion)
                 .build();
@@ -53,6 +52,8 @@ public class ApiResponse {
                 .error("Validation failed")
                 .message(message)
                 .details(details)
+                .suggestion(details.toString())
                 .build();
     }
+
 }

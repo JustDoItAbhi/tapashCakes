@@ -1,8 +1,6 @@
 package com.tapash.categoreis.controller;
 
-import com.tapash.categoreis.category_dtos.CategoryRequestDto;
-import com.tapash.categoreis.category_dtos.CategoryResponseDto;
-import com.tapash.categoreis.category_dtos.ChangeStatusToNotAvailable;
+import com.tapash.categoreis.category_dtos.*;
 import com.tapash.categoreis.category_service.CategoryService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -53,6 +51,22 @@ public class CategoryController {
     @PutMapping("/updateStatus")
     public ResponseEntity<CategoryResponseDto> changeStatusToNotAvailable(@RequestBody ChangeStatusToNotAvailable dto){
         return ResponseEntity.ok(categoryService.changeAvailableStatus(dto.getId(), dto.getStatus()));
+    }
+@PostMapping("/search")
+    public ResponseEntity<List<CategoryResponseDto>> searchDto(@RequestBody FilterDto dto){
+        return ResponseEntity.ok(categoryService.search(dto));
+}
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Boolean> deletebyid(@PathVariable("id")UUID id){
+        return ResponseEntity.ok(categoryService.deleteCategory(id));
+    }
+    @PostMapping("/allCakesTitleOnly")
+    public ResponseEntity<List<OnlyCakesTitlesAndId>> searchonlycakes(@RequestParam(required = false) String title){
+        return ResponseEntity.ok(categoryService.ListOfCakeTitle(title));
+    }
+    @GetMapping("/getCategory/{name}")
+    public ResponseEntity<CategoryResponseDto> deletebyid(@PathVariable("name")String name){
+        return ResponseEntity.ok(categoryService.gtCakeByName(name));
     }
 
 
