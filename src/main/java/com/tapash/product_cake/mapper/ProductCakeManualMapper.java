@@ -196,11 +196,23 @@ public class ProductCakeManualMapper {
             for(String url:products.getImageUrls()){
                 imageUrls.add(url);
             }
-                        dto.setImageUrl(imageUrls);
+            dto.setImageUrl(imageUrls);
         }
 
         return dto;
     }
+//    public static ProductCake toCakeRequestUpdateBasicsIntoEntityProductCake(CreateCakeProductRequestDto products) {
+//        ProductCake dto = new ProductCake();
+//        dto.setCakeName(products.getCakeName());
+//        dto.setPrice(products.getPrice());
+//        dto.setStock(products.getStock());
+//        dto.setIsAvailable(CakeAvailableEnum.IN_STOCK);
+//        dto.setDescription(products.getDescription());
+//        Set<String> imageUrls = new HashSet<>();
+//        imageUrls.add(products.getImageUrl());
+//        dto.setImageUrls(imageUrls);
+//        return dto;
+//    }
 
 
 

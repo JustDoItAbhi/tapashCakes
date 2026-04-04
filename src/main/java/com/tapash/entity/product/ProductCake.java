@@ -5,8 +5,10 @@ import com.tapash.entity.category.CakeCategory;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CurrentTimestamp;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -19,6 +21,8 @@ public class ProductCake extends BaseModel {
     private String cakeName;
     private BigDecimal price;
     private int stock;
+    @CurrentTimestamp
+    private LocalDateTime updatedAt;
     @Enumerated(EnumType.STRING)
     private CakeAvailableEnum isAvailable;
     private String description;

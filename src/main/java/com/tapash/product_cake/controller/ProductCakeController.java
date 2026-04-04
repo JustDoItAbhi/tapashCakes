@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/cakes")
@@ -28,6 +29,11 @@ public class ProductCakeController {
     public ResponseEntity<List<CakeInfoResponseDto>> getAllCakes() {
 
         return ResponseEntity.ok(productCakeService.getAllProductCakes());
+    }
+    @PutMapping("/update/{id}")
+    public ResponseEntity<ProductCakeResponseDto> updateFullCake(@PathVariable("id")UUID id,
+                                                                 @RequestBody CreateCakeProductRequestDto dto){
+        return ResponseEntity.ok(productCakeService.updateCake(id,dto));
     }
 
 }

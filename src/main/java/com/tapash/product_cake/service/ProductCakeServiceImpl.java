@@ -5,6 +5,7 @@ import com.tapash.entity.category.CakeCategory;
 import com.tapash.entity.product.*;
 import com.tapash.global_exceptions.category_ex.CakeCategoryNotFound;
 import com.tapash.global_exceptions.product_ex.ProductCakeAlreadyExists;
+import com.tapash.global_exceptions.product_ex.ProductCakeNotFound;
 import com.tapash.product_cake.dto.request.*;
 import com.tapash.product_cake.dto.response.cakeinfo_response.CakeInfoResponseDto;
 import com.tapash.product_cake.mapper.Helpers;
@@ -131,5 +132,72 @@ public class ProductCakeServiceImpl implements ProductCakeService{
         }
 
         return responseDtos;
+    }
+
+    @Override
+    public ProductCakeResponseDto updateCake(UUID id, CreateCakeProductRequestDto dto) {
+        Optional<ProductCake>exsistingCake=productCakeRepository.findById(id);
+        if(exsistingCake.isEmpty()){
+            throw new ProductCakeNotFound("CAKE NOT EXSISTS "+id);
+        }
+        ProductCake cake=exsistingCake.get();
+        cake.setCakeName(dto.getCakeName());
+        cake.setPrice(dto.getPrice());
+        if(dto.getCakeType().equals(CakeType.BIRTHDAY)
+                ||dto.getCakeType().equals(CakeType.CUSTOM)
+                ||dto.getCakeType().equals(CakeType.REGULAR)
+                ||dto.getCakeType().equals(CakeType.WEDDING ) ){
+            cake.setCakeType(dto.getCakeType());
+        }
+        cake.setDietary(dto.getDietary());
+        cake.setStock(dto.getStock());
+        cake.setIsAvailable(CakeAvailableEnum.IN_STOCK);
+        cake.setDescription(dto.getDescription());
+        Set<String> imageUrls = new HashSet<>();
+        imageUrls.add(dto.getImageUrl());
+        cake.setImageUrls(imageUrls);
+        if (dto.getRatings() != null && !dto.getRatings().isEmpty()) {
+            Set<Rating> ratingSet = new HashSet<>();
+            for (RatingRequestDto ratingRequestDto : dto.getRatings()) {
+                Rating rating = Helpers.convertToRatingEntity(ratingRequestDto);
+                rating.setProductCake(cake);
+                ratingSet.add(rating);
+            }
+            cake.setRatings(ratingSet);
+        }
+        if (dto.getTags() != null && !dto.getTags().isEmpty()) {
+            cake.setTags(dto.getTags());
+        }
+        Set<CakeVariant> cakeVariantSet = new HashSet<>();
+        for(CakeVariantRequestDto variantDto : dto.getVariants()){
+            CakeVariant variant = Helpers.convertToEntity(variantDto);
+            variant.setProductCake(cake);
+            cakeVariantSet.add(variant);
+        }
+        cake.setVariants(cakeVariantSet);
+        Set<CakeCategory> cakeCategorie = new HashSet<>();
+        if (dto.getCategory() != null && !dto.getCategory().isEmpty()) {
+            for (CakeCategoryOnlyNameReqDto categoryDto : dto.getCategory()) {
+                String categoryName = categoryDto.getName();
+                CakeCategory category = categoryRepository.findByCategoryName(categoryName)
+                        .orElseThrow(() -> new CakeCategoryNotFound("Category not found: " + categoryName));
+                cakeCategorie.add(category);
+            }
+        }
+        if (dto.getIngredients() != null && !dto.getIngredients().isEmpty()) {
+            Set<Ingredient> ingredientSet = new HashSet<>();
+            for (IngredientRequestDto ingredientRequestDto : dto.getIngredients()) {
+                Optional<Ingredient> existingIngredient = ingredientRepository.findByName(ingredientRequestDto.getName());
+                if (existingIngredient.isPresent()) {
+                    ingredientSet.add(existingIngredient.get());
+                } else {
+                    Ingredient newIngredient = Helpers.convertToIngregredientEntity(ingredientRequestDto);
+                    ingredientSet.add(ingredientRepository.save(newIngredient));
+                }
+            }
+            cake.setIngredients(ingredientSet);
+        }
+
+        return null;
     }
 }

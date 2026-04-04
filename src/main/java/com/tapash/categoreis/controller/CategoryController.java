@@ -24,7 +24,7 @@ public class CategoryController {
     public ResponseEntity<CategoryResponseDto> create(@RequestBody CategoryRequestDto dto){
         return ResponseEntity.ok(categoryService.createCategory(dto));
     }
-    @GetMapping("/")
+    @GetMapping("/filters")
     public ResponseEntity<Page<CategoryResponseDto>> getAll(@RequestParam (required = false,defaultValue = "1")int pageNumber,
                                                             @RequestParam(required = false,defaultValue = "5")int pageSize,
                                                             @RequestParam(required = false,defaultValue = "status")String sortBy,

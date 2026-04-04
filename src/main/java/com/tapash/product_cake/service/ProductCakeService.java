@@ -5,8 +5,10 @@ import com.tapash.product_cake.dto.response.ProductCakeResponseDto;
 import com.tapash.product_cake.dto.response.cakeinfo_response.CakeInfoResponseDto;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface ProductCakeService {
 ProductCakeResponseDto createCake(CreateCakeProductRequestDto dto);
 List<CakeInfoResponseDto> getAllProductCakes();
+ProductCakeResponseDto updateCake(UUID id,CreateCakeProductRequestDto dto);
 }
