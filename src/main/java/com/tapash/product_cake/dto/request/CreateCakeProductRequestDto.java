@@ -15,15 +15,16 @@ public class CreateCakeProductRequestDto {
     private String cakeName;
     private BigDecimal price;
     private int stock;
-    private String imageUrl;
-    private CakeType cakeType;
-    private Dietary dietary;
     private String description;
     private int preparationTimeMinutes;
     private int shelfLifeHours;
+    private String imageUrl;
+    private CakeType cakeType;
+    private Dietary dietary;
     private Set<CakeVariantRequestDto> variants;
+    private Set<String> tags;
+    List<RatingRequestDto>ratings;
     private Set<CakeCategoryOnlyNameReqDto> category;
     private Set<IngredientRequestDto> ingredients = new HashSet<>();
-    List<RatingRequestDto>ratings;
-    private Set<String> tags;
+
 }

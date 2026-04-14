@@ -3,11 +3,13 @@ package com.tapash.product_cake.controller;
 import com.tapash.entity.product.ProductCake;
 import com.tapash.product_cake.dto.request.CreateCakeProductRequestDto;
 import com.tapash.product_cake.dto.response.ProductCakeResponseDto;
+import com.tapash.product_cake.dto.response.ProductCakesWIthCategoryandImage;
 import com.tapash.product_cake.dto.response.cakeinfo_response.CakeInfoResponseDto;
 import com.tapash.product_cake.service.ProductCakeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,15 +27,15 @@ public class ProductCakeController {
 
         return ResponseEntity.ok(productCakeService.createCake(request));
     }
-    @GetMapping("/")
-    public ResponseEntity<List<CakeInfoResponseDto>> getAllCakes() {
-
-        return ResponseEntity.ok(productCakeService.getAllProductCakes());
-    }
     @PutMapping("/update/{id}")
     public ResponseEntity<ProductCakeResponseDto> updateFullCake(@PathVariable("id")UUID id,
                                                                  @RequestBody CreateCakeProductRequestDto dto){
         return ResponseEntity.ok(productCakeService.updateCake(id,dto));
     }
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Boolean> updateFullCake(@PathVariable("id")UUID id){
+        return ResponseEntity.ok(productCakeService.deleteProduct(id));
+    }
+
 
 }

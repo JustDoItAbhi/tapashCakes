@@ -3,6 +3,7 @@ package com.tapash.product_cake.mapper;
 import com.tapash.categoreis.category_dtos.CategoryResponseDto;
 import com.tapash.entity.category.CakeCategory;
 import com.tapash.entity.product.*;
+import com.tapash.global_exceptions.category_ex.CakeCategoryNotFound;
 import com.tapash.product_cake.dto.request.*;
 import com.tapash.product_cake.dto.response.*;
 import com.tapash.product_cake.dto.response.cakeinfo_response.CakeInfoResponseDto;
@@ -186,10 +187,53 @@ public class ProductCakeManualMapper {
         dto.setCreateAtDate(products.getCreateAtDate());
         dto.setCreateAtTime(products.getCreateAtTime());
         dto.setCakeName(products.getCakeName());
+
+        Set<CategoryResponseDto> categoryDtos = new HashSet<>();
+        if (products.getCategories() != null && !products.getCategories().isEmpty()) {
+            for (CakeCategory category : products.getCategories()) {
+                CategoryResponseDto categoryDto = new CategoryResponseDto();
+                categoryDto.setId(category.getId());
+                categoryDto.setCategoryName(category.getCategoryName());
+                categoryDto.setDescription(category.getDescription());
+                categoryDto.setStatus(category.getStatus());
+                categoryDtos.add(categoryDto);
+            }
+        }
+        dto.setCategoryResponseDtos(categoryDtos);
+
         dto.setPrice(products.getPrice());
         dto.setStock(products.getStock());
         dto.setIsAvailable(products.getIsAvailable());
         dto.setDescription(products.getDescription());
+        dto.setImageUrl(products.getImageUrls());
+        Set<String> imageUrls = new HashSet<>();
+        if (products.getImageUrls() != null && !products.getImageUrls().isEmpty()) {
+            for(String url:products.getImageUrls()){
+                imageUrls.add(url);
+            }
+            dto.setImageUrl(imageUrls);
+        }
+
+        return dto;
+    }
+    public static ProductCakesWIthCategoryandImage toCakeProductCategoryandiamge(ProductCake products) {
+        ProductCakesWIthCategoryandImage dto=new ProductCakesWIthCategoryandImage();
+        dto.setCakeId(products.getId());
+        dto.setCakeName(products.getCakeName());
+        dto.setPrice(products.getPrice());
+        dto.setStock(products.getStock());
+        dto.setIsAvailable(products.getIsAvailable());
+        Set<CategoryResponseDto>responseDtoMap=new HashSet<>();
+        for(CakeCategory category:products.getCategories()){
+//            if(category==null){
+//                throw new CakeCategoryNotFound("this category not valid "+category.getCategoryName());
+//            }
+            CategoryResponseDto categoryResponseDto=new CategoryResponseDto();
+            categoryResponseDto.setId(category.getId());
+            categoryResponseDto.setCategoryName(category.getCategoryName());
+            responseDtoMap.add(categoryResponseDto);
+        }
+        dto.setCategoryResponseDtos(responseDtoMap);
         dto.setImageUrl(products.getImageUrls());
         Set<String> imageUrls = new HashSet<>();
         if (products.getImageUrls() != null && !products.getImageUrls().isEmpty()) {

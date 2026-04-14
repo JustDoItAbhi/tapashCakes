@@ -20,13 +20,13 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<CategoryResponseDto> create(@RequestBody CategoryRequestDto dto){
         return ResponseEntity.ok(categoryService.createCategory(dto));
     }
     @GetMapping("/filters")
     public ResponseEntity<Page<CategoryResponseDto>> getAll(@RequestParam (required = false,defaultValue = "1")int pageNumber,
-                                                            @RequestParam(required = false,defaultValue = "5")int pageSize,
+                                                            @RequestParam(required = false,defaultValue = "10")int pageSize,
                                                             @RequestParam(required = false,defaultValue = "status")String sortBy,
                                                             @RequestParam(required = false,defaultValue = "ASC") String sortedFrom){
 

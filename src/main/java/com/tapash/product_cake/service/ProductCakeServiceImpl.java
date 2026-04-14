@@ -7,6 +7,7 @@ import com.tapash.global_exceptions.category_ex.CakeCategoryNotFound;
 import com.tapash.global_exceptions.product_ex.ProductCakeAlreadyExists;
 import com.tapash.global_exceptions.product_ex.ProductCakeNotFound;
 import com.tapash.product_cake.dto.request.*;
+import com.tapash.product_cake.dto.response.ProductCakesWIthCategoryandImage;
 import com.tapash.product_cake.dto.response.cakeinfo_response.CakeInfoResponseDto;
 import com.tapash.product_cake.mapper.Helpers;
 import com.tapash.product_cake.dto.response.ProductCakeResponseDto;
@@ -14,9 +15,12 @@ import com.tapash.product_cake.mapper.ProductCakeManualMapper;
 import com.tapash.repository.IngredientRepository;
 import com.tapash.repository.ProductCakeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.plaf.IconUIResource;
 import java.util.*;
 
 @Service
@@ -35,6 +39,8 @@ public class ProductCakeServiceImpl implements ProductCakeService{
         this.ingredientRepository = ingredientRepository;
         this.categoryRepository=categoryRepository;
     }
+    @Value("${spring.backend.image.url}")
+    private String backendUrl;
 
     @Override
     public ProductCakeResponseDto createCake(CreateCakeProductRequestDto dto) {
@@ -43,20 +49,18 @@ public class ProductCakeServiceImpl implements ProductCakeService{
             throw new ProductCakeAlreadyExists("CAKE ALREADY EXSISTS "+dto.getCakeName());
         }
         ProductCake cake=new ProductCake();
-        Set<CakeCategory>cakeCategories=new HashSet<>();
-
-
-
         Set<CakeCategory> cakeCategorie = new HashSet<>();
         if (dto.getCategory() != null && !dto.getCategory().isEmpty()) {
             for (CakeCategoryOnlyNameReqDto categoryDto : dto.getCategory()) {
                 String categoryName = categoryDto.getName();
-                CakeCategory category = categoryRepository.findByCategoryName(categoryName)
-                        .orElseThrow(() -> new CakeCategoryNotFound("Category not found: " + categoryName));
-                cakeCategorie.add(category);
+                Optional<CakeCategory> category = categoryRepository.findByCategoryName(categoryName);
+                if(category.isEmpty()) {
+                    throw new CakeCategoryNotFound("Category not found: " + categoryName);
+                }
+                cakeCategorie.add(category.get());
             }
         }
-        cake.setCategories(cakeCategories);
+        cake.setCategories(cakeCategorie);
         cake.setCakeName(dto.getCakeName());
         cake.setIsAvailable(CakeAvailableEnum.IN_STOCK);
         cake.setShelfLifeHours(dto.getShelfLifeHours());
@@ -71,7 +75,8 @@ public class ProductCakeServiceImpl implements ProductCakeService{
         cake.setDescription(dto.getDescription());
         cake.setPrice(dto.getPrice());
         Set<String>images=new HashSet<>();
-        images.add(dto.getImageUrl());
+        images.add(backendUrl+"/"+dto.getImageUrl());
+        System.out.println("IMAGE URL "+ images);
         cake.setImageUrls(images);
         cake.setPreparationTimeMinutes(dto.getPreparationTimeMinutes());
         cake.setStock(dto.getStock());
@@ -124,6 +129,7 @@ public class ProductCakeServiceImpl implements ProductCakeService{
     }
 
     @Override
+
     public List<CakeInfoResponseDto> getAllProductCakes() {
         List<ProductCake>productCakeList=productCakeRepository.findAll();
         List<CakeInfoResponseDto>responseDtos=new ArrayList<>();
@@ -200,4 +206,36 @@ public class ProductCakeServiceImpl implements ProductCakeService{
 
         return null;
     }
+
+    @Override
+    public ProductCakesWIthCategoryandImage getImageAndCategoryName(UUID id) {
+        Optional<ProductCake>exsistingCake=productCakeRepository.findById(id);
+        if(exsistingCake.isEmpty()){
+            throw new ProductCakeNotFound("CAKE NOT EXSISTS "+id);
+        }
+        ProductCake cake=exsistingCake.get();
+        return ProductCakeManualMapper.toCakeProductCategoryandiamge(cake);
+    }
+
+    @Override
+    public List<ProductCakesWIthCategoryandImage> getAllImages() {
+        List<ProductCake>productCakeList=productCakeRepository.findAll();
+        List<ProductCakesWIthCategoryandImage>responseDtos=new ArrayList<>();
+        for(ProductCake cake:productCakeList){
+            responseDtos.add(ProductCakeManualMapper.toCakeProductCategoryandiamge(cake));
+        }
+
+        return responseDtos;
+    }
+
+    @Override
+    public boolean deleteProduct(UUID id) {
+        Optional<ProductCake>cake=productCakeRepository.findById(id);
+        if(cake.isEmpty()){
+            throw new ProductCakeNotFound("this cake not exissts "+id);
+        }
+        productCakeRepository.deleteById(id);
+        return true;
+    }
+
 }

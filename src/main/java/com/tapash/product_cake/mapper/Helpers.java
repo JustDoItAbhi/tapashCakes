@@ -32,10 +32,10 @@ public class Helpers {
         rating.setProductCake(rating.getProductCake());
         return rating;
     }
-    public static CakeCategory convertCategoryFromRequestProductCake(CakeCategoryOnlyNameReqDto dto){
-        CakeCategory cakeCategory=new CakeCategory();
-        cakeCategory.setCategoryName(dto.getName());
-        return cakeCategory;
-    }
+//    public static CakeCategory convertCategoryFromRequestProductCake(CakeCategoryOnlyNameReqDto dto){
+//        CakeCategory cakeCategory=new CakeCategory();
+//        cakeCategory.setCategoryName(dto.getName());
+//        return cakeCategory;
+//    }
 
 }

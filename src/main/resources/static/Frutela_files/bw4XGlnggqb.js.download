@@ -1,0 +1,3 @@
+;/*FB_PKG_DELIM*/
+
+__d("IGDThreadCapabilitiesContextProvider.react",["LSThreadBitOffset","MWPThreadCapabilitiesContext","react","react-compiler-runtime"],(function(t,n,r,o,a,i,l){"use strict";var e,s=e||(e=o("react")),u=e.useCallback;function c(e){var t=o("react-compiler-runtime").c(6),n=e.children,r=e.thread,a;t[0]!==r?(a=function(t){return o("LSThreadBitOffset").has(t,r)},t[0]=r,t[1]=a):a=t[1];var i=a,l;return t[2]!==n||t[3]!==i||t[4]!==r?(l=s.jsx(o("MWPThreadCapabilitiesContext").Provider,{customCapabilityCheck:i,thread:r,children:n}),t[2]=n,t[3]=i,t[4]=r,t[5]=l):l=t[5],l}l.default=c}),98);
