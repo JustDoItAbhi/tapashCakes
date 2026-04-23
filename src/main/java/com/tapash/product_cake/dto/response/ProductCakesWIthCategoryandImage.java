@@ -2,12 +2,14 @@ package com.tapash.product_cake.dto.response;
 
 import com.tapash.categoreis.category_dtos.CategoryResponseDto;
 import com.tapash.entity.product.CakeAvailableEnum;
+import com.tapash.entity.product.CakeType;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 @Getter
@@ -20,5 +22,6 @@ public class ProductCakesWIthCategoryandImage {
     private int stock;
     private CakeAvailableEnum isAvailable;
     private Set<String> imageUrl;
+    private String description;
 
 }

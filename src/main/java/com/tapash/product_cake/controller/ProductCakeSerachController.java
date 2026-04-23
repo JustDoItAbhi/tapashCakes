@@ -1,8 +1,10 @@
 package com.tapash.product_cake.controller;
 
 import com.tapash.product_cake.dto.request.CreateCakeProductRequestDto;
+import com.tapash.product_cake.dto.request.UpdateImages;
 import com.tapash.product_cake.dto.response.ProductCakeResponseDto;
 import com.tapash.product_cake.dto.response.ProductCakesWIthCategoryandImage;
+import com.tapash.product_cake.dto.response.UpdateImageUrlsResponse;
 import com.tapash.product_cake.dto.response.cakeinfo_response.CakeInfoResponseDto;
 import com.tapash.product_cake.service.ProductCakeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +26,27 @@ public class ProductCakeSerachController {
     }
 
     @GetMapping("/product/{id}")
-    public ResponseEntity<ProductCakesWIthCategoryandImage> getChoosenById(@PathVariable("id")UUID id){
+    public ResponseEntity<ProductCakeResponseDto> getChoosenById(@PathVariable("id")UUID id){
         return ResponseEntity.ok(productCakeService.getImageAndCategoryName(id));
     }
-    @GetMapping("/product/imeages")
+    @GetMapping("/product/all")
     public ResponseEntity<List<ProductCakesWIthCategoryandImage>> getChooesn(){
         return ResponseEntity.ok(productCakeService.getAllImages());
     }
+    @GetMapping("/product/allPro")
+    public ResponseEntity<List<UpdateImageUrlsResponse>> getAlImage(){
+        return ResponseEntity.ok(productCakeService.getImages());
+    }
+    @PostMapping("/updateProdUrl")
+    public ResponseEntity<UpdateImageUrlsResponse> updateImageUrl(@RequestBody UpdateImages updateImages){
+        return ResponseEntity.ok(productCakeService.updateImageUrl(updateImages));
+    }
+    @GetMapping("/AllProductsByCategory/{category}")
+    public ResponseEntity<List<ProductCakeResponseDto>> getAllProductsByCategory(
+            @PathVariable("category")UUID category){
+
+        return ResponseEntity.ok(productCakeService.getAllProductbyCategory(category));
+    }
+
+
 }

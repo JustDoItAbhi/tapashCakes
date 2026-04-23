@@ -8,6 +8,7 @@ import com.tapash.global_exceptions.product_ex.ProductCakeAlreadyExists;
 import com.tapash.global_exceptions.product_ex.ProductCakeNotFound;
 import com.tapash.product_cake.dto.request.*;
 import com.tapash.product_cake.dto.response.ProductCakesWIthCategoryandImage;
+import com.tapash.product_cake.dto.response.UpdateImageUrlsResponse;
 import com.tapash.product_cake.dto.response.cakeinfo_response.CakeInfoResponseDto;
 import com.tapash.product_cake.mapper.Helpers;
 import com.tapash.product_cake.dto.response.ProductCakeResponseDto;
@@ -208,13 +209,13 @@ public class ProductCakeServiceImpl implements ProductCakeService{
     }
 
     @Override
-    public ProductCakesWIthCategoryandImage getImageAndCategoryName(UUID id) {
+    public ProductCakeResponseDto getImageAndCategoryName(UUID id) {
         Optional<ProductCake>exsistingCake=productCakeRepository.findById(id);
         if(exsistingCake.isEmpty()){
             throw new ProductCakeNotFound("CAKE NOT EXSISTS "+id);
         }
         ProductCake cake=exsistingCake.get();
-        return ProductCakeManualMapper.toCakeProductCategoryandiamge(cake);
+        return ProductCakeManualMapper.toResponseDto(cake);
     }
 
     @Override
@@ -236,6 +237,57 @@ public class ProductCakeServiceImpl implements ProductCakeService{
         }
         productCakeRepository.deleteById(id);
         return true;
+    }
+
+    @Override
+    public List<UpdateImageUrlsResponse> getImages() {
+        List<ProductCake>cakes=productCakeRepository.findAll();
+        List<UpdateImageUrlsResponse>responses=new ArrayList<>();
+        for(ProductCake productCake:cakes){
+            responses.add(FromEntity(productCake));
+        }
+        return responses;
+    }
+
+    @Override
+    public UpdateImageUrlsResponse updateImageUrl(UpdateImages updateImages) {
+        Optional<ProductCake>cake=productCakeRepository.findById(updateImages.getId());
+        if(cake.isEmpty()){
+            throw new ProductCakeNotFound("this cake not exissts "+updateImages.getId());
+        }
+        ProductCake productCake=cake.get();
+        productCake.setImageUrls(updateImages.getImageUrl());
+        productCakeRepository.save(productCake);
+        return FromEntity(productCake);
+
+    }
+
+    @Override
+    public List<ProductCakeResponseDto> getAllProductbyCategory(UUID category) {
+       Optional<CakeCategory>cakeCategory=categoryRepository.findById(category);
+       if(cakeCategory.isEmpty()){
+           throw new CakeCategoryNotFound(" NO SUCH CATEGORY EXISSTS "+cakeCategory);
+       }
+       List<ProductCakeResponseDto>responseDtos=new ArrayList<>();
+       CakeCategory cake=cakeCategory.get();
+       for(ProductCake productCake:cake.getProducts()){
+           responseDtos.add(ProductCakeManualMapper.toResponseDto(productCake));
+       }
+
+        return responseDtos;
+    }
+
+    private UpdateImageUrlsResponse FromEntity(ProductCake products){
+        UpdateImageUrlsResponse response=new UpdateImageUrlsResponse();
+        response.setId(products.getId());
+        Set<String> imageUrls = new HashSet<>();
+        if (products.getImageUrls() != null && !products.getImageUrls().isEmpty()) {
+            for(String url:products.getImageUrls()){
+                imageUrls.add(url);
+            }
+            response.setImageUrl(imageUrls);
+        }
+        return response;
     }
 
 }

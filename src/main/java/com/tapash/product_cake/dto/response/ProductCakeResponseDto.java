@@ -30,4 +30,23 @@ public class ProductCakeResponseDto {
     Set<RatingResponseDto>ratings;
     private int preparationTimeMinutes;
     private int shelfLifeHours;// cake validity
+
+
+    // In your CakeService or DTO mapping
+    public String getNormalizedImageUrl(String imageUrl) {
+        if (imageUrl == null)
+            return "default-cake.jpg";
+
+        // Remove any full URL and just keep the filename
+        String filename = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+
+        // Fix case sensitivity
+        if (filename.equalsIgnoreCase("banana.jpg")) {
+            filename = "banana.jpg";
+        }
+
+        // Return just the filename - let frontend add the base URL
+        return filename;
+    }
+
 }
